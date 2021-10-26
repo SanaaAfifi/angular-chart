@@ -1,0 +1,55 @@
+<div class="container">
+<div  class="aside">
+<div cdkDropList 
+[cdkDropListData]="columns" 
+class="example-list"
+[cdkDropListConnectedTo]="[selectedDimension, selectedMeasures]"
+(cdkDropListDropped)="drop($event)" 
+>
+  <div *ngFor="let column of columns" [cdkDragData]="column" cdkDrag >
+    {{column.name}}
+  </div>
+</div>
+</div>
+<div class="main">
+  <div>
+    <label >Dimension</label>
+    <div cdkDropList #selectedDimension="cdkDropList"> {{selectedDimension}}</div>
+    <input type="button" (click)="clearDimension()" text="Clear"/>
+  </div>
+  <label >Measures</label>
+  <div
+  id="measure"
+  cdkDropList
+  [cdkDropListData]="selectedMeasures"
+  cdkDropListConnectedTo="columns"
+  class="example-list"
+  (cdkDropListDropped)="drop($event)"
+  [cdkDropListEnterPredicate]="measurePredict">
+  <div
+    class="example-box"
+    *ngFor="let measure of selectedMeasures"
+    cdkDrag
+    [cdkDragData]="measure">{{measure.name}}</div>
+</div>
+
+<div>
+<ngx-charts-line-chart
+   
+  [legend]="legend"
+  [showXAxisLabel]="showXAxisLabel"
+  [showYAxisLabel]="showYAxisLabel"
+  [xAxis]="xAxis"
+  [yAxis]="yAxis"
+  [xAxisLabel]="xAxisLabel"
+  [yAxisLabel]="yAxisLabel"
+  [timeline]="timeline"
+  [results]="data"
+  (select)="onSelect($event)"
+  (activate)="onActivate($event)"
+  (deactivate)="onDeactivate($event)"
+  >
+</ngx-charts-line-chart>
+</div>
+</div>
+<div>
