@@ -1,5 +1,5 @@
-import { CdkDragDrop, transferArrayItem } from '@angular/cdk/drag-drop';
 import { Component, OnInit } from '@angular/core';
+import { DropEvent } from 'ng-drag-drop';
 import { ChartDataModel } from './data.model';
 import { ChartDataService } from './services/chart-data.service';
 
@@ -20,11 +20,11 @@ export class AppComponent implements OnInit {
   yAxis: boolean = true;
   showYAxisLabel: boolean = true;
   showXAxisLabel: boolean = true;
-  xAxisLabel: string = 'Year';
-  yAxisLabel: string = 'Population';
+  xAxisLabel: string = '';
+  yAxisLabel: string = '';
   timeline: boolean = true;
-  selectedDimension : any;
-  selectedMeasures : any  ;
+  selectedDimension: string = '';
+  selectedMeasures: Array<string> =[];
   colorScheme = {
     domain: ['#5AA454', '#E44D25', '#CFC0BB', '#7aa3e5', '#a8385d', '#aae3f5']
   };
@@ -33,47 +33,25 @@ export class AppComponent implements OnInit {
   constructor(private chartDataService: ChartDataService) {
   }
   ngOnInit() {
-   this.getColumns();
-    this.getData(['Cost', 'Revenue'], 'Product')
+    this.getColumns(); 
+  }
+  getColumns() {
+    this.chartDataService.getColumns().subscribe((res) => {
+      this.columns = res;
 
-  }
-  measurePredict(column:any)
-  {
-    return column.function==='measure';
-  }
-  clearDimension()
-  {
-    this.selectedDimension = [];
-  }
-  clearMeasures(){
-    this.selectedMeasures = [];
-  }
-  drop(event: CdkDragDrop<string[]>) {
-    // console.log(event)
-    if (event.previousContainer !== event.container) {
-     
-      transferArrayItem(event.previousContainer.data,
-                        event.container.data,
-                        event.previousIndex,
-                        event.currentIndex);
-    }
+    }, error => {
+      console.log(error.message);
+    })
   }
 
-  getColumns()
-{  this.chartDataService.getColumns().subscribe((res)=>{
-  this.columns = res;
-
-},error=>{
-  console.log(error.message);
-})
-}  
-
-  getData(measures: Array<string>, dimension: string) {
-    this.chartDataService.getData(measures, dimension).subscribe((res) => {  
+  getData( ) {
+    if(this.selectedMeasures&& this.selectedMeasures.length && this.selectedDimension)
+  {  const measures = this.selectedMeasures;
+const  dimension = this.selectedDimension;
+    this.chartDataService.getData(measures, dimension).subscribe((res) => {
       this.yAxisLabel = measures.join(', ');
       this.xAxisLabel = dimension;
-      let index = 0;
-      let dataObj : Array<ChartDataModel> = new Array<ChartDataModel>();
+      let dataObj: Array<ChartDataModel> = new Array<ChartDataModel>();
       for (let i = 1; i < res.length; i++) {
         let series = [];
         for (let j = 0; j < res[i].values.length; j++) {
@@ -83,23 +61,41 @@ export class AppComponent implements OnInit {
           name: res[i].name,
           series: series
         });
-      } 
-this.data = dataObj; 
+      }
+      this.data = dataObj;
     }, error => {
-console.error(error.message);
-    })
+      console.error(error.message);
+    })}
   }
 
-  onSelect(data: any): void {
-    console.log('Item clicked', JSON.parse(JSON.stringify(data)));
+  onDropDimension(event: DropEvent) {
+    this.selectedDimension = event.dragData.name;
+    this.getData();
+    }
+  dropAllowedDimension(event: any) {
+    return event && event.function && event.function === 'dimension';
+  }
+  clearDimension() {
+    this.selectedDimension ='';
+    this.data = [];
+    this.xAxisLabel = '';
+  }
+  onDropMeasure(event: DropEvent) {
+    if(this.selectedMeasures.indexOf(event.dragData.name) ===-1)
+ {   this.selectedMeasures.push(event.dragData.name);}
+    this.getData();
+  }
+  dropAllowedMeasure(event: any) {
+
+    return event && event.function && event.function === 'measure';
   }
 
-  onActivate(data: any): void {
-    console.log('Activate', JSON.parse(JSON.stringify(data)));
+  clearMeasures() {
+    this.selectedMeasures = [];
+    this.data = [];
+    this.yAxisLabel = '';
   }
 
-  onDeactivate(data: any): void {
-    console.log('Deactivate', JSON.parse(JSON.stringify(data)));
-  }
+
+   
 }
- 

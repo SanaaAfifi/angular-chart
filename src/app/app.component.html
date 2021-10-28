@@ -1,55 +1,34 @@
 <div class="container">
-<div  class="aside">
-<div cdkDropList 
-[cdkDropListData]="columns" 
-class="example-list"
-[cdkDropListConnectedTo]="[selectedDimension, selectedMeasures]"
-(cdkDropListDropped)="drop($event)" 
->
-  <div *ngFor="let column of columns" [cdkDragData]="column" cdkDrag >
-    {{column.name}}
+  <div class="header">Plotter</div>
+  <div class="nav">
+    <div class="columns-header">Columns</div>
+    <div class="columns-list">
+      <div class="column" draggable [dragData]="column" *ngFor="let column of columns">
+        {{column.name}}
+      </div>
+    </div>
   </div>
-</div>
-</div>
-<div class="main">
-  <div>
-    <label >Dimension</label>
-    <div cdkDropList #selectedDimension="cdkDropList"> {{selectedDimension}}</div>
-    <input type="button" (click)="clearDimension()" text="Clear"/>
-  </div>
-  <label >Measures</label>
-  <div
-  id="measure"
-  cdkDropList
-  [cdkDropListData]="selectedMeasures"
-  cdkDropListConnectedTo="columns"
-  class="example-list"
-  (cdkDropListDropped)="drop($event)"
-  [cdkDropListEnterPredicate]="measurePredict">
-  <div
-    class="example-box"
-    *ngFor="let measure of selectedMeasures"
-    cdkDrag
-    [cdkDragData]="measure">{{measure.name}}</div>
-</div>
+  <div class="main">
+    <div>
+      <label>Dimension</label>
+      <div class="div-textarea" [dropScope]="dropAllowedDimension" droppable (onDrop)="onDropDimension($event)">
 
-<div>
-<ngx-charts-line-chart
-   
-  [legend]="legend"
-  [showXAxisLabel]="showXAxisLabel"
-  [showYAxisLabel]="showYAxisLabel"
-  [xAxis]="xAxis"
-  [yAxis]="yAxis"
-  [xAxisLabel]="xAxisLabel"
-  [yAxisLabel]="yAxisLabel"
-  [timeline]="timeline"
-  [results]="data"
-  (select)="onSelect($event)"
-  (activate)="onActivate($event)"
-  (deactivate)="onDeactivate($event)"
-  >
-</ngx-charts-line-chart>
-</div>
-</div>
-<div>
+        {{selectedDimension}}
+      </div>
+<div class="clear"><button (click)="clearDimension()">Clear</button></div>
+    </div> 
+    <div>
+    <label >Measures</label>
+    <div class="div-textarea" [dropScope]="dropAllowedMeasure" droppable (onDrop)="onDropMeasure($event)">
+      {{selectedMeasures.join(" ,")}}
+    </div>
+   <div class="clear"> <button (click)="clearMeasures()">Clear</button></div>
+  </div>
+    <div class="chart">
+      <ngx-charts-line-chart [legend]="legend" [showXAxisLabel]="showXAxisLabel" [showYAxisLabel]="showYAxisLabel"
+        [xAxis]="xAxis" [yAxis]="yAxis" [xAxisLabel]="xAxisLabel" [yAxisLabel]="yAxisLabel" [timeline]="timeline"
+        [results]="data"  >
+      </ngx-charts-line-chart>
+    </div>
+  </div>
+  <div>
