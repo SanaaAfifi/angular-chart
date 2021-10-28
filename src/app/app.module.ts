@@ -9,6 +9,7 @@ import { NgxChartsModule } from '@swimlane/ngx-charts';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { DragDropModule } from '@angular/cdk/drag-drop';
 import { NgDragDropService } from 'ng-drag-drop/src/services/ng-drag-drop.service';
+import { NgDragDropModule } from 'ng-drag-drop';
 
 @NgModule({
   declarations: [
@@ -19,7 +20,8 @@ import { NgDragDropService } from 'ng-drag-drop/src/services/ng-drag-drop.servic
     AppRoutingModule,
     HttpClientModule,
     NgxChartsModule,
-    BrowserAnimationsModule
+    BrowserAnimationsModule,
+    NgDragDropModule.forRoot()
   
   ],
   providers: [ChartDataService],
